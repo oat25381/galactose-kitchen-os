@@ -21,7 +21,7 @@ type RecipeIngredient = {
     name: string;
     cost: number;
     unit: string;
-  };
+  }[];
 };
 
 export default function RecipeDetailPage({
@@ -101,8 +101,9 @@ export default function RecipeDetailPage({
       return;
     }
 
-    setRecipeIngredients(data || []);
-  }
+  setRecipeIngredients(
+  (data as RecipeIngredient[]) || []
+);
 
   async function addIngredientToRecipe() {
     const { error } = await supabase
@@ -205,10 +206,14 @@ async function updateRecipeIngredient(
   }
 
   const totalCost = recipeIngredients.reduce((sum, item) => {
-    const costPerGram = item.ingredients.cost / 1000;
+  const ingredient = item.ingredients[0];
 
-    return sum + costPerGram * item.quantity;
-  }, 0);
+  const costPerGram = ingredient
+    ? ingredient.cost / 1000
+    : 0;
+
+  return sum + costPerGram * item.quantity;
+}, 0);
 
   const profit = recipe.selling_price - totalCost;
 
@@ -285,19 +290,20 @@ async function updateRecipeIngredient(
 
         <div className="space-y-3">
           {recipeIngredients.map((item) => {
-  const itemCost =
-    (item.ingredients.cost / 1000) *
-    item.quantity;
+  const ingredient = item.ingredients[0];
 
+const itemCost = ingredient
+  ? (ingredient.cost / 1000) * item.quantity
+  : 0;
   return (
     <div
       key={item.id}
       className="bg-zinc-900 rounded-xl p-4"
     >
       <p>
-        {item.ingredients.name} —{" "}
-        {item.quantity} กรัม
-      </p>
+  {ingredient?.name} —{" "}
+  {item.quantity} กรัม
+</p>
 
       <p className="text-zinc-400">
         {itemCost.toFixed(2)} บาท
