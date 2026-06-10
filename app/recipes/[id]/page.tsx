@@ -21,7 +21,7 @@ type RecipeIngredient = {
     name: string;
     cost: number;
     unit: string;
-  };
+  }[];
 };
 
 export default function RecipeDetailPage({
