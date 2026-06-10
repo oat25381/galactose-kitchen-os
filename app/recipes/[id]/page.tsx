@@ -21,7 +21,7 @@ type RecipeIngredient = {
     name: string;
     cost: number;
     unit: string;
-  } | null;
+    }[];
 };
 
 export default function RecipeDetailPage({
@@ -36,6 +36,7 @@ export default function RecipeDetailPage({
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [ingredientId, setIngredientId] = useState("");
   const [quantity, setQuantity] = useState("");
+
 
   const [recipeIngredients, setRecipeIngredients] =
     useState<RecipeIngredient[]>([]);
@@ -161,23 +162,6 @@ async function updateRecipeIngredient(
 
   if (!newQuantity) return;
 
-  const { error } = await supabase
-    .from("recipe_ingredients")
-    .update({
-      quantity: Number(newQuantity),
-    })
-    .eq("id", id);
-
-  if (error) {
-    alert(JSON.stringify(error));
-    return;
-  }
-
-  alert("แก้ไขปริมาณสำเร็จ");
-
-  fetchRecipeIngredients();
-}
-
   async function updateSellingPrice() {
   const { error } = await supabase
     .from("recipes")
@@ -204,12 +188,9 @@ async function updateRecipeIngredient(
     );
   }
 
- const totalCost = recipeIngredients.reduce((sum, item) => {
-  const costPerGram =
-    (item.ingredients?.cost || 0) / 1000;
-
-  return sum + costPerGram * item.quantity;
-}, 0);
+<p>
+  {ingredient?.name} — {item.quantity} กรัม
+</p>
 
   const profit = recipe.selling_price - totalCost;
 
